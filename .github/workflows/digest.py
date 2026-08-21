@@ -2,7 +2,7 @@
 """
 Digital Pulse — genera latest.json con el digest diario de noticias de IA.
 
-Llama a la API de Anthropic con la herramienta de búsqueda web y escribe un
+Llama a la API de Google Gemini con la herramienta de búsqueda web y escribe un
 único archivo JSON en la raíz del repo. El historial queda en los commits de git.
 """
 
@@ -12,9 +12,9 @@ import re
 import sys
 from datetime import datetime, timedelta, timezone
 
-import anthropic
+import google.generativeai as genai
 
-MODEL = "claude-sonnet-5"
+MODEL = "gemini-3.7-flash"
 MAX_SEARCHES = 14
 OUTPUT = "latest.json"
 
