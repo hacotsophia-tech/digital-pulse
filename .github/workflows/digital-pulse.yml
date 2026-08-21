@@ -33,7 +33,7 @@ jobs:
       - name: Generar latest.json
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python scripts/digest.py
+        run: python digest.py
 
       - name: Commit y push si cambió
         run: |
