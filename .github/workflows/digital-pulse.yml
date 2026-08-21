@@ -1,0 +1,48 @@
+name: Digital Pulse — digest diario de IA
+
+on:
+  schedule:
+    # 12:00 UTC = 09:00 Argentina. GitHub puede demorar la corrida algunos minutos.
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: digital-pulse
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install --quiet "anthropic>=0.40"
+
+      - name: Generar latest.json
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/digest.py
+
+      - name: Commit y push si cambió
+        run: |
+          git config user.name  "digital-pulse-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add latest.json
+          if git diff --cached --quiet -- latest.json; then
+            echo "Sin cambios en latest.json — no se commitea."
+            exit 0
+          fi
+          git commit -m "digest: noticias IA $(date -u -d '-3 hours' +%Y-%m-%d)"
+          git push
